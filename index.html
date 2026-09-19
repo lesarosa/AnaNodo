@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AnaNodo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bg: #F1F3F1;
+    --bg-alt: #E7EAE7;
+    --ink: #16201D;
+    --ink-soft: #4B5652;
+    --line: #C7CDC8;
+    --accent: #0F6B63;
+    --accent-soft: #DDEBE8;
+    --copper: #B5652E;
+    --card-bg: #FFFFFF;
+    --font-head: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #12181A;
+      --bg-alt: #182220;
+      --ink: #EAF0EC;
+      --ink-soft: #9FB0A9;
+      --line: #2B3936;
+      --accent: #4FB8AA;
+      --accent-soft: #1D3733;
+      --copper: #D98A4E;
+      --card-bg: #16201D;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #12181A;
+    --bg-alt: #182220;
+    --ink: #EAF0EC;
+    --ink-soft: #9FB0A9;
+    --line: #2B3936;
+    --accent: #4FB8AA;
+    --accent-soft: #1D3733;
+    --copper: #D98A4E;
+    --card-bg: #16201D;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img{ max-width:100%; display:block; }
+
+  .wrap{
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* --- circuit spine --- */
+  .spine{
+    position:absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: var(--line);
+    z-index: 0;
+    display:none;
+  }
+  @media(min-width: 1200px){ .spine{ display:block; } }
+
+  /* --- nav --- */
+  header{
+    position: sticky;
+    top:0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .brand{
+    font-weight:700;
+    font-size: 18px;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .navlinks{ display:flex; gap:28px; }
+  .navlinks a{
+    color: var(--ink-soft);
+    text-decoration:none;
+    font-size: 14.5px;
+  }
+  .navlinks a:hover{ color: var(--accent); }
+  @media (max-width: 720px){ .navlinks{ display:none; } }
+
+  /* --- hero --- */
+  .hero{
+    position: relative;
+    padding: 108px 0 96px;
+    overflow:hidden;
+  }
+  .hero .wrap{ position:relative; z-index:1; }
+  .hero-trace{
+    position:absolute;
+    right: -60px;
+    top: 40px;
+    width: 420px;
+    height: 420px;
+    opacity: 0.55;
+    z-index:0;
+    pointer-events:none;
+  }
+  @media (max-width: 900px){ .hero-trace{ display:none; } }
+
+  .kicker{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    margin: 0 0 22px;
+  }
+  h1{
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(38px, 5.4vw, 62px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 24px;
+    max-width: 780px;
+  }
+  .lede{
+    font-size: 19px;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin: 0 0 40px;
+  }
+  .cta-row{ display:flex; gap:16px; flex-wrap:wrap; }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding: 13px 24px;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration:none;
+    border: 1px solid transparent;
+    transition: transform .15s ease, background .2s ease;
+  }
+  .btn-primary{
+    background: var(--accent);
+    color: #F2FBF8;
+  }
+  .btn-primary:hover{ transform: translateY(-1px); }
+  .btn-ghost{
+    color: var(--ink);
+    border-color: var(--line);
+  }
+  .btn-ghost:hover{ border-color: var(--accent); color: var(--accent); }
+
+  /* --- section shell --- */
+  section{ padding: 84px 0; position:relative; z-index:1; }
+  .section-alt{ background: var(--bg-alt); }
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+  h2{
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(28px, 3.4vw, 38px);
+    line-height: 1.15;
+    margin: 0 0 20px;
+    max-width: 620px;
+  }
+  .lead-p{
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin: 0 0 8px;
+  }
+
+  /* --- problem stat row --- */
+  .stat-row{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 48px;
+  }
+  @media (max-width: 760px){ .stat-row{ grid-template-columns: 1fr; } }
+  .stat{
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .stat .num{
+    font-family: var(--font-mono);
+    font-size: 30px;
+    color: var(--copper);
+    display:block;
+    margin-bottom: 8px;
+  }
+  .stat .label{ color: var(--ink-soft); font-size: 14.5px; }
+
+  /* --- solution split --- */
+  .split{
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 64px;
+    align-items:center;
+  }
+  @media (max-width: 860px){ .split{ grid-template-columns: 1fr; gap: 40px; } }
+  .diagram-box{
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--card-bg);
+    aspect-ratio: 4/3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+  .diagram-box svg{ width:100%; height:100%; }
+  .diagram-caption{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 12px;
+    text-align:center;
+  }
+
+  /* --- benefits grid --- */
+  .benefits{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 48px;
+  }
+  @media (max-width: 900px){ .benefits{ grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 560px){ .benefits{ grid-template-columns: 1fr; } }
+  .benefit{
+    background: var(--card-bg);
+    padding: 28px 24px;
+  }
+  .benefit .mark{
+    width: 30px; height: 2px;
+    background: var(--accent);
+    margin-bottom: 18px;
+  }
+  .benefit h3{
+    font-size: 16.5px;
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+  .benefit p{
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin:0;
+  }
+
+  /* --- demo steps --- */
+  .steps{ margin-top: 48px; display:flex; flex-direction:column; gap: 0; }
+  .step{
+    display:grid;
+    grid-template-columns: 64px 1fr;
+    gap: 20px;
+    padding: 26px 0;
+    border-top: 1px solid var(--line);
+  }
+  .step:last-child{ border-bottom: 1px solid var(--line); }
+  .step .idx{
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 14px;
+    padding-top: 3px;
+  }
+  .step h3{ margin: 0 0 6px; font-size: 16.5px; font-weight:600; }
+  .step p{ margin:0; color: var(--ink-soft); font-size: 15px; max-width: 560px; }
+
+  .media-frame{
+    margin-top: 40px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--card-bg);
+    aspect-ratio: 16/7;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+  }
+
+  /* --- team --- */
+  .team-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 48px;
+  }
+  @media (max-width: 760px){ .team-grid{ grid-template-columns: 1fr; } }
+  .member{ text-align:left; }
+  .avatar{
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    margin-bottom: 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .member h3{ margin: 0 0 4px; font-size: 16px; font-weight:600; }
+  .member .role{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--accent);
+  }
+
+  /* --- contact --- */
+  .contact-box{
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 56px 48px;
+    background: var(--card-bg);
+    display:flex;
+    align-items:flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+  .contact-box h2{ margin:0 0 10px; max-width: 420px; }
+  .contact-box p{ color: var(--ink-soft); margin:0; max-width: 380px; }
+
+  footer{
+    padding: 32px 0 48px;
+    border-top: 1px solid var(--line);
+  }
+  footer .wrap{
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer p{
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    margin:0;
+  }
+
+  .fill-note{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--copper);
+    background: color-mix(in srgb, var(--copper) 12%, transparent);
+    border: 1px dashed var(--copper);
+    padding: 3px 8px;
+    border-radius: 3px;
+    display:inline-block;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .pulse{ animation:none !important; }
+  }
+
+  .pulse{
+    stroke-dasharray: 6 10;
+    animation: dash 6s linear infinite;
+  }
+  @keyframes dash{
+    to{ stroke-dashoffset: -160; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand"><span class="dot"></span>AnaNodo</div>
+    <nav class="navlinks">
+      <a href="#problema">Problema</a>
+      <a href="#solucion">Solución</a>
+      <a href="#beneficios">Beneficios</a>
+      <a href="#equipo">Equipo</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="hero-trace" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path class="pulse" d="M20 40 H180 V140 H340 V220 H240 V320 H400" stroke="var(--accent)" stroke-width="1.5"/>
+      <circle cx="20" cy="40" r="4" fill="var(--accent)"/>
+      <circle cx="340" cy="220" r="4" fill="var(--copper)"/>
+      <circle cx="400" cy="320" r="4" fill="var(--accent)"/>
+    </svg>
+    <div class="wrap">
+      <p class="kicker">MONITOREO Y ANÁLISIS DE RED ELÉCTRICA</p>
+      <h1><span class="fill-note">[frase de impacto: qué resuelve AnaNodo en una línea]</span></h1>
+      <p class="lede"><span class="fill-note">[1–2 líneas: qué hace AnaNodo, en lenguaje simple, para quién]</span></p>
+      <div class="cta-row">
+        <a href="#solucion" class="btn btn-primary">Ver cómo funciona</a>
+        <a href="#contacto" class="btn btn-ghost">Solicitar información</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMA -->
+  <section id="problema" class="section-alt">
+    <div class="wrap">
+      <p class="eyebrow">El problema</p>
+      <h2><span class="fill-note">[nombre corto del problema que atacan]</span></h2>
+      <p class="lead-p"><span class="fill-note">[2–3 líneas describiendo la falla o necesidad del sector eléctrico/electrónico que AnaNodo resuelve]</span></p>
+      <div class="stat-row">
+        <div class="stat">
+          <span class="num">[XX%]</span>
+          <span class="label"><span class="fill-note">[cifra o dato de referencia 1]</span></span>
+        </div>
+        <div class="stat">
+          <span class="num">[XX]</span>
+          <span class="label"><span class="fill-note">[cifra o dato de referencia 2]</span></span>
+        </div>
+        <div class="stat">
+          <span class="num">[XX]</span>
+          <span class="label"><span class="fill-note">[cifra o dato de referencia 3]</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUCIÓN -->
+  <section id="solucion">
+    <div class="wrap">
+      <p class="eyebrow">La solución</p>
+      <div class="split">
+        <div>
+          <h2>AnaNodo</h2>
+          <p class="lead-p"><span class="fill-note">[qué es AnaNodo y cómo funciona, explicado de forma simple]</span></p>
+          <p class="lead-p"><span class="fill-note">[descripción técnica breve: sensores, algoritmo, hardware, etc.]</span></p>
+        </div>
+        <div>
+          <div class="diagram-box">
+            <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="65" width="30" height="20" rx="2" stroke="var(--ink-soft)" fill="none"/>
+              <rect x="160" y="65" width="30" height="20" rx="2" stroke="var(--ink-soft)" fill="none"/>
+              <rect x="85" y="20" width="30" height="20" rx="2" stroke="var(--accent)" fill="none"/>
+              <path d="M40 75 H85" stroke="var(--ink-soft)" stroke-width="1.2"/>
+              <path d="M100 40 V65" stroke="var(--accent)" stroke-width="1.2"/>
+              <path d="M115 75 H160" stroke="var(--ink-soft)" stroke-width="1.2"/>
+              <circle cx="100" cy="75" r="3" fill="var(--accent)"/>
+            </svg>
+          </div>
+          <p class="diagram-caption">[esquema del sistema — reemplazar por diagrama real]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFICIOS -->
+  <section id="beneficios" class="section-alt">
+    <div class="wrap">
+      <p class="eyebrow">Beneficios</p>
+      <h2>Por qué AnaNodo</h2>
+      <div class="benefits">
+        <div class="benefit">
+          <div class="mark"></div>
+          <h3><span class="fill-note">[beneficio 1]</span></h3>
+          <p>[breve explicación]</p>
+        </div>
+        <div class="benefit">
+          <div class="mark"></div>
+          <h3><span class="fill-note">[beneficio 2]</span></h3>
+          <p>[breve explicación]</p>
+        </div>
+        <div class="benefit">
+          <div class="mark"></div>
+          <h3><span class="fill-note">[beneficio 3]</span></h3>
+          <p>[breve explicación]</p>
+        </div>
+        <div class="benefit">
+          <div class="mark"></div>
+          <h3><span class="fill-note">[beneficio 4]</span></h3>
+          <p>[breve explicación]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO / CÓMO FUNCIONA -->
+  <section id="demo">
+    <div class="wrap">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2>De la señal al diagnóstico</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="idx">01</span>
+          <div>
+            <h3><span class="fill-note">[paso 1]</span></h3>
+            <p>[qué ocurre en esta etapa]</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="idx">02</span>
+          <div>
+            <h3><span class="fill-note">[paso 2]</span></h3>
+            <p>[qué ocurre en esta etapa]</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="idx">03</span>
+          <div>
+            <h3><span class="fill-note">[paso 3]</span></h3>
+            <p>[qué ocurre en esta etapa]</p>
+          </div>
+        </div>
+      </div>
+      <div class="media-frame">[espacio para foto, video corto o gráfica de resultados]</div>
+    </div>
+  </section>
+
+  <!-- EQUIPO -->
+  <section id="equipo" class="section-alt">
+    <div class="wrap">
+      <p class="eyebrow">Equipo</p>
+      <h2>Quiénes lo hacemos</h2>
+      <div class="team-grid">
+        <div class="member">
+          <div class="avatar">[foto]</div>
+          <h3>[Nombre 1]</h3>
+          <p class="role">[rol técnico, ej. Diseño electrónico]</p>
+        </div>
+        <div class="member">
+          <div class="avatar">[foto]</div>
+          <h3>[Nombre 2]</h3>
+          <p class="role">[rol técnico, ej. Desarrollo de firmware]</p>
+        </div>
+        <div class="member">
+          <div class="avatar">[foto]</div>
+          <h3>[Nombre 3]</h3>
+          <p class="role">[rol técnico, ej. Análisis de datos]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <div class="wrap">
+      <div class="contact-box">
+        <div>
+          <h2>Hablemos de AnaNodo</h2>
+          <p>[correo de contacto o mensaje de invitación a escribir]</p>
+        </div>
+        <a href="mailto:contacto@ananodo.com" class="btn btn-primary">Solicitar información</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>AnaNodo</p>
+    <p>[correo] · [ciudad, si aplica]</p>
+  </div>
+</footer>
+
+</body>
+</html>
